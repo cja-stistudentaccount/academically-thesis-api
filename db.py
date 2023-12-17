@@ -7,6 +7,7 @@ class User(db.Model):
     user_id = db.Column(db.String, primary_key=True, unique=True)
     account_type = db.Column(db.String, nullable=False)
     username = db.Column(db.String, nullable=False, unique=True)
+    email = db.Column(db.String, nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
 
 class Student(db.Model):
@@ -19,7 +20,31 @@ class Student(db.Model):
     course = db.Column(db.String)
     summary = db.Column(db.String)
 
-def init_db():
-    with db.app.app_context():
-        db.init_app(db.app)
-        db.create_all()
+class Course(db.Model):
+    course_id = db.Column(db.String, primary_key=True, unique=True)
+    course_name = db.Column(db.String, unique=True)
+    course_description = db.Column(db.String, unique=True)
+
+class Attempt(db.Model):
+    attempt_id = db.Column(db.String, primary_key=True, unique=True)
+    user_id = db.Column(db.String, db.ForeignKey('user.user_id'), nullable=False)
+    timestamp = db.Column(db.DateTime, default=db.func.now())
+
+class QuestionAttempt(db.Model):
+    question_attempt_id = db.Column(db.String, primary_key=True, unique=True)
+    attempt_id = db.Column(db.String, db.ForeignKey('attempt.attempt_id'), nullable=False)
+    question_id = db.Column(db.String, db.ForeignKey('question.question_id'), nullable=False)
+    selected_choice_id = db.Column(db.String, db.ForeignKey('choice.choice_id'), nullable=True)
+    is_correct = db.Column(db.Boolean, nullable=False)
+
+class Question(db.Model):
+    question_id = db.Column(db.String, primary_key=True, unique=True)
+    question_text = db.Column(db.String, nullable=False)
+    course_id = db.Column(db.String, db.ForeignKey('course.course_id'), nullable=False)
+    course = db.relationship('Course', backref=db.backref('questions', lazy=True))
+
+class Choice(db.Model):
+    choice_id = db.Column(db.String, primary_key=True, unique=True)
+    question_id = db.Column(db.String, db.ForeignKey('question.question_id'), nullable=False)
+    choice_text = db.Column(db.String, nullable=False)
+    is_correct = db.Column(db.Boolean, nullable=False)
