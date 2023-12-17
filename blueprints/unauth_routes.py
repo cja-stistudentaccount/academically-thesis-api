@@ -7,7 +7,7 @@ from urllib.parse import unquote
 import uuid
 import jwt
 import bcrypt
-from blueprints.auth_wrapper import auth_required
+from config import Config
 
 unauth_bp = Blueprint('unauth', __name__)
 
@@ -28,7 +28,7 @@ def register_user():
             account_type = data['account_type'],
             username = data['username'],
             email = data['email'],
-            password = bcrypt.hashpw(data['password'].encode(), api.config['SALT']).decode()
+            password = bcrypt.hashpw(data['password'].encode(), Config.SALT).decode()
         )
 
         db.session.add(new_user)
@@ -53,14 +53,14 @@ def login():
 
         # Check if the user exists and the password is correct
         password = data['password']
-        print(password)
+        print(password, bcrypt.hashpw(data['password'].encode(), Config.SALT).decode())
         print(user.password)
         print(password == user.password)
         print(bcrypt.checkpw(password.encode(), user.password.encode()))
         if user and bcrypt.checkpw(password.encode(), user.password.encode()):
             # Generate a JWT token
             expiration_time = datetime.utcnow() + timedelta(hours=1)  # Set the token expiration time
-            token = jwt.encode({'user_id': user.user_id, 'exp': expiration_time}, api.config['SECRET_KEY'], algorithm='HS256')
+            token = jwt.encode({'user_id': user.user_id, 'exp': expiration_time}, Config.SECRET_KEY, algorithm='HS256')
 
             # Return the token in the response
             return jsonify(access_token=token), 200

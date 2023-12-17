@@ -2,10 +2,9 @@ from flask import render_template, request, jsonify
 from db import db, User, Student, Course
 from datetime import datetime, timedelta
 from functools import wraps
-from urllib.parse import unquote
-import uuid
+from config import Config
+
 import jwt
-import bcrypt
 
 # Authentication decorator
 def auth_required(f):
@@ -23,7 +22,7 @@ def auth_required(f):
         
         try:
            # decode the token to obtain user public_id
-            data = jwt.decode(token, api.config['SECRET_KEY'], algorithms=['HS256'])
+            data = jwt.decode(token, Config.SECRET_KEY, algorithms=['HS256'])
             current_user = User.query.filter_by(user_id=data['user_id']).first()
         except:
             print('invalid token')
