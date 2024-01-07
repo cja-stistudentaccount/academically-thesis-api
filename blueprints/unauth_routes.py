@@ -17,6 +17,10 @@ def register_user():
         data = request.get_json()
         print(data)
 
+        whitelisted_emails = ['test@laoag.sti.edu.ph', 'avila@laoag.sti.edu.ph', 'test2@laoag.sti.edu.ph', 'tutor@laoag.sti.edu.ph', 'tutor2@laoag.sti.edu.ph']
+        if data['email'] not in whitelisted_emails:
+            return jsonify({"error": "Invalid email. Please use your official STI student email if you are currently enrolled."}), 400
+
         # Check if the username already exists
         existing_user = User.query.filter_by(username=data['username']).first()
         if existing_user:
