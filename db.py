@@ -51,3 +51,12 @@ class Choice(db.Model):
     question_id = db.Column(db.String, db.ForeignKey('question.question_id'), nullable=False)
     choice_text = db.Column(db.String, nullable=False)
     is_correct = db.Column(db.Boolean, nullable=False)
+
+class Appointment(db.Model):
+    appointment_id = db.Column(db.String, primary_key=True, unique=True)
+    tutor_id = db.Column(db.String, db.ForeignKey('user.user_id'), nullable=False)
+    student_id = db.Column(db.String, db.ForeignKey('user.user_id'), nullable=False)
+    application_status = db.Column(db.String, nullable=True)
+    datetime = db.Column(db.DateTime)
+    tutor_feedback = db.Column(db.String, nullable=True)
+    is_complete = db.Column(db.Boolean, nullable=False)

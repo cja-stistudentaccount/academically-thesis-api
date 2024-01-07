@@ -1,6 +1,6 @@
 from flask import Flask
 from db import db, Course, Question, Choice
-from blueprints import course_bp, unauth_bp, user_bp, analytics_bp, learning_bp
+from blueprints import course_bp, unauth_bp, user_bp, analytics_bp, learning_bp, student_bp, tutor_bp
 from flask_migrate import Migrate
 from config import Config
 from routes import web_bp
@@ -20,6 +20,8 @@ api.register_blueprint(unauth_bp)
 api.register_blueprint(user_bp, url_prefix='/user')
 api.register_blueprint(analytics_bp, url_prefix='/analytics')
 api.register_blueprint(learning_bp, url_prefix='/learning_assessment')
+api.register_blueprint(student_bp, url_prefix='/student')
+api.register_blueprint(tutor_bp, url_prefix='/tutor')
 
 #: register backend components
 api.register_blueprint(web_bp)
