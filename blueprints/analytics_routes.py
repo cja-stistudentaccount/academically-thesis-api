@@ -1,6 +1,6 @@
 from flask import render_template, request, jsonify
 from flask import Blueprint
-from db import db, Attempt, QuestionAttempt, Question, Choice, Course, User, Student
+from db import db, Attempt, QuestionAttempt, Question, Choice, Course, User, Student, Appointment
 from datetime import datetime, timedelta
 from functools import wraps
 from urllib.parse import unquote
@@ -42,20 +42,29 @@ def get_student_leaderboard_improvement():
 def get_tutor_leaderboard():
     users = User.query.all()
     leaderboard = {}
+    final_score = 0
 
+    student_list = set()
     for user in users:
 
         if user.account_type == 'Student':
             continue
         
-        final_score = 0
-        
-        scores = Attempt.query.filter_by(user_id=user.user_id).all()
-        for score in scores:
-            final_score += score.score
-        print(user.user_id, final_score)
+        tutor_sessions = Appointment.query.filter_by(tutor_id=user.user_id).filter(Appointment.is_complete == True).all()
+        for session in tutor_sessions:
+            print(session.appointment_id)
+            final_score += 100
+            student_list.add(session.student_id)
 
-        leaderboard[user.user_id] = final_score
+    for student in student_list:
+        rates = []
+        latest_attempts = Attempt.query.filter_by(user_id=student).order_by(Attempt.timestamp.desc()).limit(5).all()
+        latest_scores = [attempt.score for attempt in latest_attempts]
+        for i in range(len(latest_scores) - 1):
+            rates.append(latest_scores[i] - latest_scores[i+1])
+
+        final_score += sum(rates) / len(rates)
+    leaderboard[user.user_id] = final_score
     
     print(leaderboard)
     return jsonify(leaderboard), 200

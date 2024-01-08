@@ -58,5 +58,6 @@ class Appointment(db.Model):
     student_id = db.Column(db.String, db.ForeignKey('user.user_id'), nullable=False)
     application_status = db.Column(db.String, nullable=True)
     datetime = db.Column(db.DateTime)
+    expiry = db.Column(db.DateTime)
     tutor_feedback = db.Column(db.String, nullable=True)
     is_complete = db.Column(db.Boolean, nullable=False)

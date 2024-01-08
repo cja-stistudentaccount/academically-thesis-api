@@ -44,6 +44,7 @@ def send_application(current_user):
         tutor_id = User.query.filter_by(email=tutor).first().user_id,
         student_id=user.user_id,
         datetime = datetime.datetime(2024, month, day, hour, minute),
+        expiry = datetime.datetime(2024, month, day, hour, minute) + datetime.timedelta(days=3),
         application_status = 'Pending',
         is_complete = False
     )
@@ -77,6 +78,12 @@ def get_tutoring_schedules(current_user):
     schedules_list = {}
 
     for appointment in appointment_list:
+
+        print(appointment.expiry, datetime.datetime.now())
+        if appointment.expiry < datetime.datetime.now():
+            print(appointment.expiry, datetime.datetime.now(), appointment.expiry < datetime.datetime.now())
+            continue
+
         schedules_list[appointment.appointment_id] = {
             'tutor' : appointment.tutor_id,
             'datetime' : appointment.datetime,

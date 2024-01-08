@@ -62,3 +62,17 @@ def update_application(current_user):
     
     db.session.commit()
     return 'Application status updated', 200
+
+@tutor_bp.route('/finish_tutoring_session', methods=['PUT'])
+@auth_required
+def finish_tutoring_session(current_user):
+    data = request.json
+    feedback = data['feedback']
+    appointment_id = data['appointment_id']
+
+    appointment = Appointment.query.filter_by(appointment_id=appointment_id).first()
+    appointment.is_complete = True
+    appointment.tutor_feedback = feedback
+    
+    db.session.commit()
+    return 'Application status updated', 200
